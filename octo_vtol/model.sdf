@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+<!-- Octo‑VTOL 8 lift + 1 pusher – derived from PX4 standard_vtol -->
+<sdf version="1.10">
+  <model name="mili_vtol">
+    <pose>0 0 0.246 0 0 0</pose>
+
+    <!-- =========================================================
+         BASE LINK (동체·센서·서보)
+    ========================================================== -->
+    <link name="base_link">
+      <pose>0 0 0 0 0 0</pose>
+
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>5</mass>
+        <inertia>
+          <ixx>0.477708333333</ixx><ixy>0</ixy><ixz>0</ixz>
+          <iyy>0.341666666667</iyy><iyz>0</iyz>
+          <izz>0.811041666667</izz>
+        </inertia>
+      </inertial>
+
+      <!-- 지면 충돌 바디 -->
+      <collision name="base_link_collision">
+        <pose>0 0 -0.07 0 0 0</pose>
+        <geometry>
+          <box><size>0.55 2.144 0.05</size></box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <kp>100000</kp><kd>1.0</kd>
+              <max_vel>0.1</max_vel><min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+
+      <!-- 동체 / 날개 비주얼 -->
+      <visual name="base_link_visual">
+        <pose>0.53 -1.072 -0.1 1.5707963268 0 3.1415926536</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://mili_vtol/meshes/x8_wing.dae</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>.175 .175 .175 1</ambient>
+          <diffuse>.175 .175 .175 1</diffuse>
+        </material>
+      </visual>
+
+      <!-- 붐(파이프) 시각화 -->
+      <visual name="left_motor_column">
+        <pose>0 0.35 0.01 0 0 0</pose>
+        <geometry><box><size>0.74 0.03 0.03</size></box></geometry>
+        <material>
+          <ambient>.175 .175 .175 1</ambient>
+          <diffuse>.175 .175 .175 1</diffuse>
+        </material>
+      </visual>
+      <visual name="right_motor_column">
+        <pose>0 -0.35 0.01 0 0 0</pose>
+        <geometry><box><size>0.74 0.03 0.03</size></box></geometry>
+        <material>
+          <ambient>.175 .175 .175 1</ambient>
+          <diffuse>.175 .175 .175 1</diffuse>
+        </material>
+      </visual>
+
+      <!-- 붐 끝 위치 마킹 -->
+      <visual name="m0"><pose>-0.35 0.35 0.045 0 0 0</pose>
+        <geometry><cylinder><length>0.035</length><radius>0.02</radius></cylinder></geometry>
+      </visual>
+      <visual name="m1"><pose>-0.35 -0.35 0.045 0 0 0</pose>
+        <geometry><cylinder><length>0.035</length><radius>0.02</radius></cylinder></geometry>
+      </visual>
+      <visual name="m2"><pose>0.35 -0.35 0.045 0 0 0</pose>
+        <geometry><cylinder><length>0.035</length><radius>0.02</radius></cylinder></geometry>
+      </visual>
+      <visual name="m3"><pose>0.35 0.35 0.045 0 0 0</pose>
+        <geometry><cylinder><length>0.035</length><radius>0.02</radius></cylinder></geometry>
+      </visual>
+
+      <gravity>1</gravity>
+
+      <!-- ==================== 센서 ==================== -->
+      <!-- IMU -->
+      <sensor name="imu_sensor" type="imu">
+        <always_on>1</always_on><update_rate>250</update_rate>
+        <imu>
+          <angular_velocity>
+            <x><noise type="gaussian"><stddev>0.0003394</stddev></noise></x>
+            <y><noise type="gaussian"><stddev>0.0003394</stddev></noise></y>
+            <z><noise type="gaussian"><stddev>0.0003394</stddev></noise></z>
+          </angular_velocity>
+          <linear_acceleration>
+            <x><noise type="gaussian"><stddev>0.004</stddev></noise></x>
+            <y><noise type="gaussian"><stddev>0.004</stddev></noise></y>
+            <z><noise type="gaussian"><stddev>0.004</stddev></noise></z>
+          </linear_acceleration>
+        </imu>
+      </sensor>
+
+      <!-- 기압 -->
+      <sensor name="air_pressure_sensor" type="air_pressure">
+        <always_on>1</always_on><update_rate>50</update_rate>
+        <air_pressure>
+          <pressure><noise type="gaussian"><stddev>0.01</stddev></noise></pressure>
+        </air_pressure>
+      </sensor>
+
+      <!-- 자력 -->
+      <sensor name="magnetometer_sensor" type="magnetometer">
+        <always_on>1</always_on><update_rate>100</update_rate>
+        <magnetometer>
+          <x><noise type="gaussian"><stddev>0.0001</stddev></noise></x>
+          <y><noise type="gaussian"><stddev>0.0001</stddev></noise></y>
+          <z><noise type="gaussian"><stddev>0.0001</stddev></noise></z>
+        </magnetometer>
+      </sensor>
+
+      <!-- GPS -->
+      <sensor name="navsat_sensor" type="navsat">
+        <always_on>1</always_on><update_rate>30</update_rate>
+      </sensor>
+    </link>
+
+    <!-- =========================================================
+         8 리프트 모터 링크 + 조인트
+    ========================================================== -->
+    <!-- ※ 좌표·방향은 예시입니다. 필요 시 pose 조정 -->
+    <!-- rotor_0 ~ rotor_7 블록 생략 (질문에 올리신 부분 그대로 사용) -->
+
+    <!-- =========================================================
+         PUSHER (rotor_puller)
+    ========================================================== -->
+    <!-- rotor_puller 블록 ‑ 질문과 동일 (수정 없음) -->
+
+    <!-- =========================================================
+         서보 링크 & 조인트
+    ========================================================== -->
+    <!-- … 생략 (질문 원본 유지)  -->
+
+    <!-- 서보 조인트 0 -->
+    <joint name="servo_0" type="revolute">
+      <parent>base_link</parent><child>left_elevon</child>
+      <pose>-0.18 0.6 -0.005 0 0 0.265</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit><lower>-0.78</lower><upper>0.78</upper></limit>
+        <dynamics><damping>1</damping></dynamics>
+      </axis>
+    </joint>
+
+    <!-- 서보 조인트 1 (닫힘 태그 보완) -->
+    <joint name="servo_1" type="revolute">
+      <parent>base_link</parent><child>right_elevon</child>
+      <pose>-0.18 -0.6 -0.005 0 0 -0.265</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit><lower>-0.78</lower><upper>0.78</upper></limit>
+        <dynamics><damping>1</damping></dynamics>
+      </axis>
+    </joint>
+
+    <!-- 서보 조인트 2 (닫힘 태그 보완) -->
+    <joint name="servo_2" type="revolute">
+      <parent>base_link</parent><child>elevator</child>
+      <pose>-0.5 0 0 0 0 0</pose>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit><lower>-0.78</lower><upper>0.78</upper></limit>
+        <dynamics><damping>1</damping></dynamics>
+      </axis>
+    </joint>
+
+    <!-- =========================================================
+         Lift/Drag & JointPositionController
+    ========================================================== -->
+    <!-- 질문에 올리신 플러그인 블록 그대로 (수정 無) -->
+
+    <!-- =========================================================
+         멀티콥터 모터 모델   (motor_0 ~ motor_8)
+    ========================================================== -->
+    <!-- 플러그인 0‑8 블록 그대로 사용 (들여쓰기만 정리) -->
+
+    <!-- ========================================================= -->
+    <static>0</static>
+  </model>
+</sdf>
